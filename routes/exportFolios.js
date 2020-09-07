@@ -12,7 +12,6 @@ router.post('/',
 )
 
 
-
 //Get all folios if has a token
 //GET/exportfolios
 router.get('/',
@@ -26,22 +25,37 @@ router.get('/',
 router.get('/:id',
     verifyToken,
     exportFoliosController.exportfolio
-
 )
 
+
+
+//------>Manage actors...
+
+
+//Save manage actors of a folio if has a token
+//POST/exportfolios/id(folio)/manageactors
 router.post('/:id/manageactors',
     verifyToken,
     manageActorsController.manageActorsCreate
 )
 
+
+//Update manage actors of a folio if has a token
+//PUT/exportfolios/id(folio)/manageactors
 router.put('/:id/manageactors/',
     verifyToken,
     manageActorsController.manageActorsUpdate
 )
 
+
+//Get all manage actors of a folio if has a token
+//GET/exportfolios/id(folio)/manageactors
 router.get('/:id/manageactors/',
     verifyToken,
     manageActorsController.manageActorsFolio
 )
+
+
+
 
 module.exports = router;

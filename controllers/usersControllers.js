@@ -3,7 +3,7 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User')
 
-//Add a user 
+//Add a new user (email, password)
 exports.userCreate = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -13,7 +13,6 @@ exports.userCreate = async (req, res) => {
             res.status(400).json({ msg: 'El usuario ya existe' })
         };
         newUser = new User(req.body);
-        //console.log('newUser:', newUser);
         //hashear password
         const salt = await bcryptjs.genSalt(10);
         newUser.password = await bcryptjs.hash(password, salt)

@@ -21,27 +21,30 @@ exports.actorCreate = async (req, res) => {
 
 
 
-//generate email with guest: true
+//generate email with guest: true POST/actor
 const generateEmailActor = async (req, res, actorId) => {
-    const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
-    let newGuestUser = await User.findOne({ email })
-    if (newGuestUser) {
-        res.status(400).json({ msg: 'El usuario ya existe' })
-    };
-    newGuestUser = new User({ email, password, guest: true });
-    newGuestUser.actor = actorId;
-    console.log(newGuestUser);
-    const salt = await bcryptjs.genSalt(10);
-    newGuestUser.password = await bcryptjs.hash(password, salt)
-    //save user in DB
-    await newGuestUser.save();
-    //create jwt
-    jwt.sign({ id: newGuestUser._id, email: email, password: password }, process.env.JWT_SECRET, {
-        expiresIn: 3600
-    }, (error, token) => {
-        if (error) throw error;
-        console.log({ register: true, newGuestUser })
-    })
+    try {
+        const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
+        let newGuestUser = await User.findOne({ email })
+        if (newGuestUser) {
+            res.status(400).json({ msg: 'El usuario ya existe' })
+        };
+        newGuestUser = new User({ email, password, guest: true });
+        newGuestUser.actor = actorId;
+        const salt = await bcryptjs.genSalt(10);
+        newGuestUser.password = await bcryptjs.hash(password, salt)
+        //save user in DB
+        await newGuestUser.save();
+        //create jwt
+        jwt.sign({ id: newGuestUser._id, email: email, password: password }, process.env.JWT_SECRET, {
+            expiresIn: 3600
+        }, (error, token) => {
+            if (error) throw error;
+            console.log({ register: true, newGuestUser })
+        })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 
@@ -65,7 +68,7 @@ exports.actorUpdate = async (req, res) => {
 }
 
 
-//modification email and password actor/guest
+//modification email and password PUT/actor
 const modificationEmailActor = async (req, res, actorId) => {
     try {
         const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
@@ -84,7 +87,6 @@ const modificationEmailActor = async (req, res, actorId) => {
     } catch (err) {
         console.log(err);
     }
-
 }
 
 
@@ -101,6 +103,8 @@ exports.actorsList = async (req, res) => {
         res.status(400).send('Hubo error al obtener todos los actores')
     }
 }
+
+
 
 //Get an actor
 exports.actor = async (req, res) => {

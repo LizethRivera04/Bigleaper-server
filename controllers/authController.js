@@ -22,7 +22,9 @@ exports.userAuthentication = async (req, res) => {
         jwt.sign({ id: user._id, email: email, password: password }, process.env.JWT_SECRET, {
             expiresIn: 86400
         }, (error, token) => {
-            if (error) throw error
+            if (error) {
+                res.send(error)
+            }
             res.send({ auth: true, token })
         })
     } catch (err) {
