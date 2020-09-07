@@ -18,6 +18,10 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false,
 
+    },
+    actor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Actor'
     }
 
 })

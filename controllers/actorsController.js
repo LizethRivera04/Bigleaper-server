@@ -7,13 +7,11 @@ const User = require('../models/User');
 
 //Actor creation
 exports.actorCreate = async (req, res) => {
-
     try {
-        generateEmailActor(req, res)
         const newActor = new Actor(req.body);
         newActor.creator = req.userId;
         const actor = await newActor.save();
-        //await newGuestUser.save();
+        generateEmailActor(req, res, actor._id)
         if (!actor) throw Error('Algo salió mal al guardar al nuevo actor')
         res.status(200).json(actor);
     } catch (err) {
@@ -21,14 +19,17 @@ exports.actorCreate = async (req, res) => {
     }
 }
 
-const generateEmailActor = async (req, res) => {
+
+
+//generate email with guest: true
+const generateEmailActor = async (req, res, actorId) => {
     const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
-    console.log(req.body);
     let newGuestUser = await User.findOne({ email })
     if (newGuestUser) {
         res.status(400).json({ msg: 'El usuario ya existe' })
     };
     newGuestUser = new User({ email, password, guest: true });
+    newGuestUser.actor = actorId;
     console.log(newGuestUser);
     const salt = await bcryptjs.genSalt(10);
     newGuestUser.password = await bcryptjs.hash(password, salt)
@@ -55,12 +56,38 @@ exports.actorUpdate = async (req, res) => {
             return res.status(401).json({ msg: 'No autorizado' });
         }
         actor = await Actor.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        modificationEmailActor(req, res, actor._id)
         res.status(200).json({ actor })
     } catch (err) {
         console.log(err);
         res.status(500).send(err)
     }
 }
+
+
+//modification email and password actor/guest
+const modificationEmailActor = async (req, res, actorId) => {
+    try {
+        const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
+        //hashear password
+        const salt = await bcryptjs.genSalt(10);
+        let updateUser = {
+            email: email,
+            password: await bcryptjs.hash(password, salt),
+            guest: true
+        }
+        const guestUser = await User.findOneAndUpdate({ actor: req.params.id }, updateUser, { new: true });
+        if (!guestUser) {
+            console.log({ updateguest: false })
+        }
+        console.log({ updateguest: true, guestUser })
+    } catch (err) {
+        console.log(err);
+    }
+
+}
+
+
 
 //Get all actors
 exports.actorsList = async (req, res) => {
