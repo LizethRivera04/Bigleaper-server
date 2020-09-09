@@ -9,8 +9,8 @@ const ExportFolio = require('../models/ExportFolios');
 exports.manageActorsCreate = async (req, res) => {
     try {
         let manageActorsDb = await ManageActors.find({ folioId: req.params.id })
-        if (manageActorsDb.length !== 0) {
-            return res.status(404).json({ msg: 'Ya existen los manage actors de este folio, si desea actualizarlos use el método PUT' })
+        if (manageActorsDb.length > 4) {
+            return res.status(404).json({ msg: 'Ya existen los cuatro manage actors de este folio, si desea actualizarlos use el método PUT' })
         }
         const newManageActors = new ManageActors(req.body);
         newManageActors.creator = req.userId;
@@ -28,23 +28,28 @@ exports.manageActorsCreate = async (req, res) => {
 //Update manage actors from an exportfolio
 exports.manageActorsUpdate = async (req, res) => {
     try {
-        let manageActors = await ManageActors.find({ folioId: req.params.id })
-        console.log(manageActors[0]);
+        let manageActor = await ManageActors.find({ folioId: req.params.id })
+        console.log(manageActor[0]);
+        let manageActors = await ManageActors.findOneAndUpdate({ _id: req.params.name }, req.body, { new: true })
         if (!manageActors) {
             return res.status(404).json({ msg: 'Manageactor no encontrado' })
         }
-        if (manageActors[0].creator.toString() !== req.userId) {
+        if (manageActor[0].creator.toString() !== req.userId) {
             return res.status(401).json({ msg: 'No autorizado' });
         }
-        manageActors = await ManageActors.findOneAndUpdate({ folioId: req.params.id }, req.body, { new: true })
         res.status(200).json({ manageActors })
     } catch (err) {
         console.log(err);
         res.status(500).send(err)
     }
 }
-
-
+/* "currentForwarder":"Ibimex, S.A. de C.V.",
+"forwarderAgent":"Julio Ibimex",
+"currentCustomsBroker": "Promotora Empresarial Internacional PROMETEX,S.A de C.V",
+"customBrokerAgent":"Raúl Prometex",
+"currentDestinyCarrier":"Grupo Pascal,S.A de C.V",
+"destinyCarrierAgent":"Alberto Pascal"
+ */
 
 //Get manage actors from a export folio
 exports.manageActorsFolio = async (req, res) => {

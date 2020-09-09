@@ -42,7 +42,7 @@ router.post('/:id/manageactors',
 
 //Update manage actors of a folio if has a token
 //PUT/exportfolios/id(folio)/manageactors
-router.put('/:id/manageactors/',
+router.put('/:id/manageactors/:name',
     verifyToken,
     manageActorsController.manageActorsUpdate
 )
