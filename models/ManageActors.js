@@ -6,13 +6,25 @@ const ManageActorsSchema = new Schema({
     currentOriginCarrier: {
         type: String
     },
+    originCarrierAgent: {
+        type: String
+    },
     currentForwarder: {
+        type: String
+    },
+    forwarderAgent: {
         type: String
     },
     currentCustomsBroker: {
         type: String
     },
+    customBrokerAgent: {
+        type: String
+    },
     currentDestinyCarrier: {
+        type: String
+    },
+    destinyCarrierAgent: {
         type: String
     },
     creator: {
