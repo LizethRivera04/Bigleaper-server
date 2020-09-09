@@ -36,7 +36,6 @@ const ActorSchema = new Schema({
     },
     adress: {
         type: String,
-        required: true,
         trim: true
     },
     telephone: {

@@ -24,13 +24,15 @@ exports.actorCreate = async (req, res) => {
 //generate email with guest: true POST/actor
 const generateEmailActor = async (req, res, actorId) => {
     try {
-        const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
+        const { companyName, tradeName, typeCompany, rfc, adress, telephone, companyAgent, email, password } = req.body;
         let newGuestUser = await User.findOne({ email })
         if (newGuestUser) {
             res.status(400).json({ msg: 'El usuario ya existe' })
         };
         newGuestUser = new User({ email, password, guest: true });
-        newGuestUser.actor = actorId;
+        newGuestUser.company = companyName;
+        newGuestUser.creator = req.userId;
+        newGuestUser.name = companyAgent;
         const salt = await bcryptjs.genSalt(10);
         newGuestUser.password = await bcryptjs.hash(password, salt)
         //save user in DB
@@ -71,13 +73,16 @@ exports.actorUpdate = async (req, res) => {
 //modification email and password PUT/actor
 const modificationEmailActor = async (req, res, actorId) => {
     try {
-        const { companyName, tradeName, typeCompany, rfc, adress, telephone, compantAgent, email, password } = req.body;
+        const { companyName, tradeName, typeCompany, rfc, adress, telephone, companyAgent, email, password } = req.body;
         //hashear password
         const salt = await bcryptjs.genSalt(10);
         let updateUser = {
             email: email,
             password: await bcryptjs.hash(password, salt),
-            guest: true
+            guest: true,
+            company: companyName,
+            name: companyAgent,
+            creator: req.userId
         }
         const guestUser = await User.findOneAndUpdate({ actor: req.params.id }, updateUser, { new: true });
         if (!guestUser) {

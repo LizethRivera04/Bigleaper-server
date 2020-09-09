@@ -29,3 +29,19 @@ exports.userCreate = async (req, res) => {
         res.status(400).json({ msg: err })
     }
 }
+
+
+
+//Get a list of users guests
+exports.usersList = async (req, res) => {
+    try {
+        const usersGuests = await User.find({ creator: req.userId })
+        if (!usersGuests) {
+            res.status(404).json('No hay usuarios guest asociados con tu cuenta')
+        }
+        res.status(200).json(usersGuests);
+    } catch (error) {
+        res.status(403).json({ msg: 'No tienes permiso para obtener datos de los guests' });
+    }
+
+}

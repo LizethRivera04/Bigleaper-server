@@ -19,9 +19,18 @@ const UserSchema = new Schema({
         default: false,
 
     },
-    actor: {
+    name: {
+        type: String,
+        trim: true
+    },
+    company: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    creator: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Actor'
+        ref: 'User'
     }
 
 })
